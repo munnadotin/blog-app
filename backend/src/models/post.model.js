@@ -35,16 +35,16 @@ const postSchema = new mongoose.Schema({
         ref: "user"
     }],
     comments: [{
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "user"
-        },
+        user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
         text: String,
-        createdAt: {
-            type: Date,
-            default: Date.now
-        }
-    }]
+        createdAt: { type: Date, default: Date.now },
+        
+        replies: [{
+            user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
+            text: String,
+            createdAt: { type: Date, default: Date.now }
+        }]
+    }],
 }, {
     timestamps: true
 });

@@ -3,6 +3,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { authRouter } from './routes/auth.route.js';
 import { postRoute } from './routes/post.route.js';
+import { actionRoute } from './routes/post.action.route.js';
 
 export const app = express();
 
@@ -29,3 +30,10 @@ app.use("/api/auth", authRouter);
  */
 
 app.use("/api/post", postRoute); 
+
+/**
+ * @description Post action routes
+ * @route /api/post
+ */
+
+app.use("/api/post", actionRoute); 
