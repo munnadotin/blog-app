@@ -14,10 +14,10 @@ const postSchema = new mongoose.Schema({
         ref: "user",
         required: [true, "Author is required"],
     },
-    tags: {
-        type: [String],
-        default: []
-    },
+    tags: [{
+        type: String,
+        required: [true, "Tags are required"],
+    }],
     ImageCapture: {
         type: String,
         required: [true, "Cover image is required"],
