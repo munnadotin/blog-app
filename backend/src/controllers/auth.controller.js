@@ -1,7 +1,12 @@
 import { userModel } from "../models/auth.model.js";
 import jwt from 'jsonwebtoken';
 
-export async function register(req, res) {
+/**
+ * @description Register user
+ * @route POST /api/auth/register
+ * @access public
+ */
+async function register(req, res) {
     try {
         const { name, email, password } = req.body;
 
@@ -63,7 +68,12 @@ export async function register(req, res) {
     }
 }
 
-export async function refreshToken(req, res) {
+/**
+ * @description Refresh access token
+ * @route POST /api/auth/refresh-token
+ * @access public
+ */
+async function refreshToken(req, res) {
     try {
         const { refreshToken } = req.cookies;
 
@@ -109,7 +119,12 @@ export async function refreshToken(req, res) {
     }
 }
 
-export async function login(req, res) {
+/**
+ * @description Login user
+ * @route POST /api/auth/login
+ * @access public
+ */
+async function login(req, res) {
     try {
         const { email, password } = req.body;
 
@@ -164,8 +179,12 @@ export async function login(req, res) {
         })
     }
 }
-
-export async function profile(req, res) {
+/**
+ * @description Get user profile
+ * @route GET /api/auth/profile
+ * @access private
+ */
+async function profile(req, res) {
     try {
         const id = req.user.id;
 
@@ -188,12 +207,17 @@ export async function profile(req, res) {
     }
 }
 
-export async function logout(req, res) {
+/**
+ * @description Logout user
+ * @route POST /api/auth/logout
+ * @access private
+ */
+async function logout(req, res) {
     try {
         res.clearCookie("refreshToken");
 
         const user = await userModel.findById(req.user.id);
-        
+
         if (user) {
             user.refreshToken = null;
             await user.save();
@@ -209,3 +233,11 @@ export async function logout(req, res) {
         })
     }
 }
+
+export const authController = {
+    register,
+    refreshToken,
+    login,
+    profile,
+    logout
+}; 
