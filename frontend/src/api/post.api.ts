@@ -3,7 +3,7 @@ import type { Post, CreatePost } from "../types/post.type";
 import { apiHandler } from "../utils/apiHandler";
 
 // Get all posts
-export const getPosts = () => apiHandler(api.get<Post[]>("/api/post"));
+export const getPosts = () => apiHandler(api.get<{ posts: Post[] }>("/api/post"));
 
 // Get post by id
 export const getPost = (id: string) => apiHandler(api.get<Post>(`/api/post/${id}`));

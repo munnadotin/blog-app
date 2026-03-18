@@ -39,7 +39,7 @@ function Blog() {
             </div>
 
             {/* Categories Section */}
-            <div className="mb-10">
+            <div className="py-2">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">Browse Categories</h2>
                 <div className="flex flex-wrap gap-3">
                     {categories.map((category) => (
