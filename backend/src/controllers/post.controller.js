@@ -8,9 +8,9 @@ import { postModel } from "../models/post.model.js";
  */
 async function createPost(req, res) {
     try {
-        const { title, content, tags } = req.body;
+        const { title, content, tags, category } = req.body;
 
-        if (!title || !content || !tags) {
+        if (!title || !content || !tags || !category) {
             return res.status(400).json({
                 message: "All fields are required"
             });
@@ -24,6 +24,7 @@ async function createPost(req, res) {
             content,
             ImageCapture: image,
             tags,
+            category,
             readingTime,
             authorId: req.user.id,
             slug: title.toLowerCase().replace(/ /g, "-")
@@ -49,7 +50,7 @@ async function createPost(req, res) {
  */
 async function updatePost(req, res) {
     try {
-        const { title, content, tags } = req.body;
+        const { title, content, tags, category } = req.body;
         const image = req.file;
         const { id } = req.params;
 
@@ -67,6 +68,7 @@ async function updatePost(req, res) {
         if (title) post.title = title;
         if (content) post.content = content;
         if (tags) post.tags = tags;
+        if (category) post.category = category;
         if (image) post.ImageCapture = await uploadToImageKit(image);
 
         // save the updated post

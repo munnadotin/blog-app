@@ -10,7 +10,7 @@ function Blog() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {/* Hero Section */}
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold text-gray-900 mb-4">
@@ -45,9 +45,9 @@ function Blog() {
                     {categories.map((category) => (
                         <button
                             key={category}
-                            className={`px-4 py-2 rounded-lg font-medium transition-all duration-300
+                            className={`px-4 py-1 rounded font-medium transition-all duration-300 cursor-pointer
                                 ${category === 'All'
-                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                    ? 'text-white bg-blue-600 hover:bg-blue-700'
                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900'
                                 }`}
                         >

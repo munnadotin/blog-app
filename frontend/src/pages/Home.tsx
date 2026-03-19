@@ -25,7 +25,7 @@ function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 max-w-7xl mx-auto w-full px-4 space-y-4">
+      <div className="flex-1 max-w-7xl mx-auto w-full px-4">
         <Blog />
         <BlogCard />
       </div>

@@ -5,9 +5,9 @@ function Navbar() {
                 <h1 className="text-2xl font-bold text-gray-800"><span className="text-blue-500 font-bold text-3xl">B</span>logSpace</h1>
             </div>
             <div className="flex gap-2">
-                <button className="relative px-6 py-1.5 font-semibold border-2 border-indigo-500 overflow-hidden group rounded cursor-pointer">
-                    <span className="absolute inset-0 bg-indigo-500 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                    <span className="relative z-10 text-indigo-500 group-hover:text-white transition-colors duration-300">
+                <button className="relative px-6 py-1.5 font-semibold border-2 border-indigo-700 overflow-hidden group rounded cursor-pointer">
+                    <span className="absolute inset-0 bg-blue-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                    <span className="relative z-10 text-blue-700 group-hover:text-white transition-colors duration-300">
                         Login
                     </span>
                 </button>

@@ -14,6 +14,11 @@ const postSchema = new mongoose.Schema({
         ref: "user",
         required: [true, "Author is required"],
     },
+    category: {
+        type: String,
+        enum: ["technology", "career", "finance", "health"],
+        required: true
+    },
     tags: [{
         type: String,
         required: [true, "Tags are required"],
@@ -38,7 +43,7 @@ const postSchema = new mongoose.Schema({
         user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
         text: String,
         createdAt: { type: Date, default: Date.now },
-        
+
         replies: [{
             user: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
             text: String,
