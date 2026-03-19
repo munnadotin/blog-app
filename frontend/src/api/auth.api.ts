@@ -13,3 +13,6 @@ export const logout = () => apiHandler(api.post("/auth/logout"));
 
 // Get profile
 export const getProfile = () => apiHandler(api.get("/auth/profile"));
+
+// Refresh token
+export const refreshToken = () => apiHandler(api.post("/auth/refresh-token"));
