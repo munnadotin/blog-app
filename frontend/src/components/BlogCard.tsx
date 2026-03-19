@@ -2,10 +2,11 @@ import { useSelector } from "react-redux"
 import type { RootState } from "../app/store"
 import { Calendar1, ChevronRight, Clock, Heart, MessageCircle } from "lucide-react";
 import Loader from "./Loader";
+import { Link } from "react-router-dom";
 
 function BlogCard() {
   const blogs = useSelector((state: RootState) => state.blog);
-
+  
   if (blogs.loading) return <Loader />;
 
   return (
@@ -95,10 +96,12 @@ function BlogCard() {
 
             {/* Read More Link */}
             <div className="mt-4 pt-4 border-t border-gray-100">
-              <button className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-300 flex items-center gap-2 group/btn cursor-pointer">
+              <Link
+                to={`/blog/${blog.slug}`}
+                className="text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors duration-300 flex items-center gap-2 group/btn cursor-pointer">
                 Read full article
                 <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
-              </button>
+              </Link>
             </div>
           </div>
         </article>

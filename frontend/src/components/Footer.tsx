@@ -10,7 +10,7 @@ function Footer() {
 
   return (
     <footer className="bg-indigo-600 py-10 px-6 text-white">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
           {/* Brand Section */}
           <div className="md:col-span-5 space-y-4">

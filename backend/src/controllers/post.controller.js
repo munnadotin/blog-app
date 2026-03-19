@@ -1,5 +1,6 @@
 import { uploadToImageKit } from "../config/imagekit.js";
 import { postModel } from "../models/post.model.js";
+import { generateUniqueSlug } from "../services/slug.service.js";
 
 /**
  * @description Create a new post
@@ -16,8 +17,13 @@ async function createPost(req, res) {
             });
         }
 
+        if(typeof tags === "string"){
+            tags = tags.split(",").map(tag => tag.trim());
+        }
+
         const image = await uploadToImageKit(req.file);
         const readingTime = Math.ceil(content.split(" ").length / 200);
+        const slug = await generateUniqueSlug(title);
 
         const post = await postModel.create({
             title: title,
@@ -27,7 +33,7 @@ async function createPost(req, res) {
             category,
             readingTime,
             authorId: req.user.id,
-            slug: title.toLowerCase().replace(/ /g, "-")
+            slug
         });
 
         res.status(201).json({
@@ -120,16 +126,16 @@ async function deletePost(req, res) {
 }
 
 /**
- * @description Get a post by id
- * @route GET /api/post/:id
+ * @description Get a post by slug
+ * @route GET /api/post/:slug
  * @access public
  */
 async function getPost(req, res) {
     try {
-        const { id } = req.params;
+        const { slug } = req.params;   
 
-        // find post by id
-        const post = await postModel.findById(id).populate("authorId", "name email");
+        // find post by slug
+        const post = await postModel.findOne({ slug }).populate("authorId", "name email");
 
         // check if post exist
         if (!post) {

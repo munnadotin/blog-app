@@ -27,11 +27,11 @@ postRoute.put("/:id", upload.single("image"), authMiddleware, postController.upd
 postRoute.delete("/:id", authMiddleware, postController.deletePost);
 
 /**
- * @route GET /api/post/:id
- * @description Get a post by id
+ * @route GET /api/post/:slug
+ * @description Get a post by slug
  * @access Public
  */
-postRoute.get("/:id", postController.getPost);
+postRoute.get("/:slug", postController.getPost);
 
 /**
  * @route GET /api/post

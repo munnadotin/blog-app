@@ -29,7 +29,7 @@ const postSchema = new mongoose.Schema({
     },
     slug: {
         type: String,
-        unique: true
+        unique: [true, "Slug must be unique"],
     },
     readingTime: {
         type: Number,
