@@ -3,15 +3,18 @@ import { useForm } from 'react-hook-form';
 import { EyeIcon, EyeOff, Info, Mail, Lock, Loader2, User } from 'lucide-react';
 import type { RegisterData } from '../types/auth.type';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../app/store';
+import { registerUser } from '../features/auth/authSlice';
 
 const register = () => {
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<RegisterData>();
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
 
     const onSubmit = (data: RegisterData) => {
-        console.log(data);
-
+        dispatch(registerUser(data));
     };
 
     return (
@@ -53,7 +56,10 @@ const register = () => {
                                 />
                             </div>
                             {errors.name && (
-                                <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>
+                                <p className="text-red-500 text-sm flex items-center gap-1 mt-1">
+                                    <Info className='h-4 w-4' />
+                                    {errors.name.message}
+                                </p>
                             )}
                         </div>
 

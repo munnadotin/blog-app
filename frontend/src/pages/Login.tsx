@@ -3,17 +3,24 @@ import { useForm } from 'react-hook-form';
 import { EyeIcon, EyeOff, Info, Mail, Lock, Loader2 } from 'lucide-react';
 import type { LoginData } from '../types/auth.type';
 import { useNavigate } from 'react-router-dom';
+import { loginUser, setToken, setUser } from '../features/auth/authSlice';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from '../app/store';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginData>();
     const navigate = useNavigate();
+    const dispatch = useDispatch<AppDispatch>();
 
-    const onSubmit = (data: LoginData) => {
-        console.log(data);
-        
-    };
-
+    function onSubmit(data: LoginData) {
+        dispatch(loginUser(data))
+            .then((response) => {
+                const { user, accessToken } = response.payload as any;
+                dispatch(setUser(user));
+                dispatch(setToken(accessToken));
+            });
+    }
     return (
         <div className="min-h-screen flex items-center justify-center p-4">
             <div className="max-w-md w-full">
@@ -79,7 +86,7 @@ const Login = () => {
                                     {...register("password", {
                                         required: "Password is required",
                                         minLength: {
-                                            value: 8,
+                                            value: 6,
                                             message: "Password must be at least 8 characters"
                                         }
                                     })}

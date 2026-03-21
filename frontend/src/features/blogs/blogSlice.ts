@@ -1,66 +1,70 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { getPosts, getPost } from "../../api/post.api";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { Post } from "../../types/post.type";
+import { getAllPosts, getPost } from "../../api/post.api";
 
-type BlogState = {
-    blogs: Post[];
-    loading: boolean;
-    error: string | null;
-    post: Post | null;
-};
+interface blogState {
+    blogs: Post[],
+    error: string | null,
+    loading: boolean,
+    blog: Post | null
+}
 
-export const fetchBlogs = createAsyncThunk(
-    "blog/fetchBlogs",
-    async () => {
-        const response = await getPosts();
-        return response.posts;
+export const fetchBlogs = createAsyncThunk("/blogs/fetchBlogs", async (_, { rejectWithValue }) => {
+    try {
+        const response = await getAllPosts();
+        return response.data;
+    } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || "Failed to fetch blogs")
     }
-);
+});
 
-export const getPostApi = createAsyncThunk<Post, string>(
-    "blog/getPost",
-    async (slug: string) => {
-        const response = await getPost(slug);
-        return response.post;
+export const fetchBlogBySlug = createAsyncThunk("blogs/fetchBlogBySlug", async (id: string, { rejectWithValue }) => {
+    try {
+        const response = await getPost(id)
+        return response.data;
+    } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || "Failed to fetch blog")
     }
-);
+})
 
-const initialState: BlogState = {
+const initialState: blogState = {
     blogs: [],
-    loading: false,
     error: null,
-    post: null,
-};
+    loading: false,
+    blog: null
+}
 
 const blogSlice = createSlice({
     name: "blog",
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder
-            .addCase(fetchBlogs.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(fetchBlogs.fulfilled, (state, action) => {
-                state.loading = false;
-                state.blogs = action.payload;
-            })
-            .addCase(fetchBlogs.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || null;
-            })
-            .addCase(getPostApi.pending, (state) => {
-                state.loading = true;
-            })
-            .addCase(getPostApi.fulfilled, (state, action) => {
-                state.loading = false;
-                state.post = action.payload;
-            })
-            .addCase(getPostApi.rejected, (state, action) => {
-                state.loading = false;
-                state.error = action.error.message || null;
-            });
-    },
+        // Fetch all blogs
+        builder.addCase(fetchBlogs.pending, (state) => {
+            state.loading = true;
+        });
+        builder.addCase(fetchBlogs.fulfilled, (state, action) => {
+            state.loading = false;
+            state.blogs = action.payload.posts as Post[];
+        });
+        builder.addCase(fetchBlogs.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+
+        // Fetch blog by slug
+        builder.addCase(fetchBlogBySlug.pending, (state) => {
+            state.loading = true;
+        });
+        builder.addCase(fetchBlogBySlug.fulfilled, (state, action) => {
+            state.loading = false;
+            state.blog = action.payload.post as Post;
+        });
+        builder.addCase(fetchBlogBySlug.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+    }
 });
 
-export default blogSlice.reducer;
+export default blogSlice.reducer; 

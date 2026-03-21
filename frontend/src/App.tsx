@@ -6,8 +6,22 @@ import Home from './pages/Home';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from './app/store';
+import Dashboard from './pages/Dashboard';
 
 export default function App() {
+  const dispatch = useDispatch<AppDispatch>();
+  const accessToken = useSelector((state: RootState) => state.auth.accessToken);
+
+  // useEffect(() => {
+  //   // Only refresh token if user has an existing token (is logged in)
+  //   if (accessToken) {
+  //     dispatch(refreshTokenUser());
+  //   }
+  // }, [dispatch, accessToken]);
+
   return (
     <>
       <Toaster position='top-right' />
@@ -17,6 +31,7 @@ export default function App() {
           <Route path='/blog/:slug' element={<BlogDetails />} />
           <Route path='/auth/login' element={<Login />} />
           <Route path='/auth/register' element={<Register />} />
+          <Route path='/auth/dashboard' element={<Dashboard />} />
         </Route>
       </Routes>
     </>

@@ -166,6 +166,7 @@ async function login(req, res) {
         res.status(200).json({
             message: "User fetched successfully",
             user: {
+                id: user._id,
                 name: user.name,
                 email: user.email
             },

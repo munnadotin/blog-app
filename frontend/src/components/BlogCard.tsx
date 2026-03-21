@@ -1,13 +1,20 @@
-import { useSelector } from "react-redux"
-import type { RootState } from "../app/store"
 import { Calendar1, ChevronRight, Clock, Heart, MessageCircle } from "lucide-react";
 import Loader from "./Loader";
 import { Link } from "react-router-dom";
+import { likePost } from "../api/post.action.api";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import type { RootState } from "../app/store";
 
 function BlogCard() {
   const blogs = useSelector((state: RootState) => state.blog);
-  
+
   if (blogs.loading) return <Loader />;
+
+  async function handleLike(id: string) {
+    await likePost(id);
+    toast.success("Post liked successfully");
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 max-w-7xl mx-auto">
@@ -84,10 +91,14 @@ function BlogCard() {
 
             {/* Engagement Stats */}
             <div className="flex items-center gap-6 text-sm">
-              <span className="flex items-center gap-1.5 text-gray-600">
-                <Heart className="w-5 h-5 text-red-500" />
+              <button
+                onClick={() => handleLike(blog._id)}
+                className="flex items-center gap-1.5 text-gray-600">
+                <Heart
+                  className={`w-5 h-5 `}
+                />
                 <span className="font-medium">{blog.likes.length}</span>
-              </span>
+              </button>
               <span className="flex items-center gap-1.5 text-gray-600">
                 <MessageCircle className="w-5 h-5 text-blue-500" />
                 <span className="font-medium">{blog.comments.length}</span>

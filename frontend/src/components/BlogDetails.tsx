@@ -1,26 +1,31 @@
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getPostApi } from "../features/blogs/blogSlice";
-import { useSelector } from "react-redux";
-import type { AppDispatch, RootState } from "../app/store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Loader from "./Loader";
-import { Calendar1, Clock1 } from "lucide-react";
+import { Calendar1, Clock1, Heart, MessageCircle, Reply, Trash2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { commentPost } from "../api/post.action.api";
+import type { AppDispatch, RootState } from "../app/store";
+import { fetchBlogBySlug } from "../features/blogs/blogSlice";
 
 function BlogDetails() {
     const { slug } = useParams<{ slug: string }>();
-    const post = useSelector((state: RootState) => state.blog.post);
+    const { register, handleSubmit, formState: { errors } } = useForm<{ content: string }>();
+    const post = useSelector((state: RootState) => state.blog.blog);
+    // const user = useSelector((state: RootState) => state.auth.user);
     const dispatch = useDispatch<AppDispatch>();
     const loading = useSelector((state: RootState) => state.blog.loading);
-    
+
     useEffect(() => {
-        async function getPost() {
-            dispatch(getPostApi(slug!));
-        }
-        getPost();
+        dispatch(fetchBlogBySlug(slug!));
     }, [slug]);
 
+    console.log(post)
     if (loading) return <Loader />;
+
+    async function onSubmit(data: { content: string }) {
+        await commentPost(post?._id!, data.content);
+    }
 
     return (
         <div className="min-h-screen py-8">
@@ -106,17 +111,13 @@ function BlogDetails() {
                             <div className="flex items-center gap-6">
                                 {/* Like Button */}
                                 <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                                    </svg>
+                                    <Heart className="h-6 w-6" />
                                     <span className="font-medium">{post?.likes?.length || 0} likes</span>
                                 </button>
 
                                 {/* Comments Count */}
                                 <button className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                                    </svg>
+                                    <MessageCircle className="h-6 w-6" />
                                     <span className="font-medium">{post?.comments?.length || 0} comments</span>
                                 </button>
                             </div>
@@ -129,34 +130,44 @@ function BlogDetails() {
                             {/* Comments List */}
                             <div className="space-y-6">
                                 {post?.comments?.map((comment: any) => (
-                                    <div key={comment.id} className="flex gap-4">
+                                    <div key={comment._id} className="flex gap-4">
                                         <div className="w-10 h-10 rounded-full bg-linear-to-br from-gray-400 to-gray-600 shrink-0"></div>
                                         <div className="flex-1">
                                             <div className="flex items-center justify-between mb-1">
-                                                <h4 className="font-semibold text-gray-900">{comment.user}</h4>
-                                                <span className="text-xs text-gray-500">
+                                                <div>
+                                                    <h4 className="font-semibold text-gray-900">{comment.user.name}</h4>
+                                                    <span className="text-sm text-gray-500">{comment.user.email}</span>
+                                                </div>
+                                                <span className="flex flex-col gap-2 text-xs text-gray-500">
                                                     {new Date(comment.createdAt).toLocaleDateString()}
+                                                    <div className="flex items-center gap-3">
+                                                        {/* reply and delete */}
+                                                        <Reply className="h-5 w-6" />
+                                                        <Trash2 className="h-4 w-5" />
+                                                    </div>
                                                 </span>
                                             </div>
-                                            <p className="text-gray-700">{comment.content}</p>
+                                            <p className="text-gray-700">{comment.text}</p>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
                             {/* Add Comment */}
-                            <div className="mt-8">
+                            <form onSubmit={handleSubmit(onSubmit)} className="mt-8">
                                 <textarea
+                                    {...register("content", { required: "Comment is required" })}
                                     placeholder="Add a comment..."
                                     className="w-full p-4 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                                     rows={3}
                                 />
+                                {errors.content && <p className="text-red-500 text-sm mt-1">{errors.content.message}</p>}
                                 <div className="flex justify-end mt-2">
-                                    <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
+                                    <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
                                         Post Comment
                                     </button>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
 

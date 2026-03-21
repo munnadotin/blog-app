@@ -17,7 +17,7 @@ async function createPost(req, res) {
             });
         }
 
-        if(typeof tags === "string"){
+        if (typeof tags === "string") {
             tags = tags.split(",").map(tag => tag.trim());
         }
 
@@ -132,10 +132,13 @@ async function deletePost(req, res) {
  */
 async function getPost(req, res) {
     try {
-        const { slug } = req.params;   
+        const { slug } = req.params;
 
         // find post by slug
-        const post = await postModel.findOne({ slug }).populate("authorId", "name email");
+        const post = await postModel.findOne({ slug })
+            .populate({ path: "authorId", select: "name email" })
+            .populate({ path: "comments.user", select: "name email" })
+            .populate({ path: "comments.replies.user", select: "name email" });
 
         // check if post exist
         if (!post) {

@@ -3,7 +3,7 @@ import BlogCard from "../components/BlogCard";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchBlogs } from "../features/blogs/blogSlice";
-import type { AppDispatch } from "../app/store";
+import type { AppDispatch } from "../types/api.type";
 
 function Home() {
   const dispatch = useDispatch<AppDispatch>();
