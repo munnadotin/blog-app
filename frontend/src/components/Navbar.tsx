@@ -7,14 +7,15 @@ function Navbar() {
     const user = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+
     async function handleLogout() {
         try {
             await dispatch(logOut()).unwrap();
+            navigate("/auth/login"); 
         } catch (error) {
             console.error(error);
         }
     }
-    console.log(user)
 
     return (
         <div className="flex items-center justify-between gap-2 bg-gray-100 py-4 px-8">
@@ -25,7 +26,7 @@ function Navbar() {
 
             </div>
             <div className="flex gap-2">
-                {user.accessToken && (
+                {user.user ? user && (
                     <button
                         onClick={handleLogout}
                         className="relative px-6 py-1.5 font-semibold border-2 border-indigo-700 overflow-hidden group rounded cursor-pointer">
@@ -34,8 +35,7 @@ function Navbar() {
                             Logout
                         </span>
                     </button>
-                )}
-                {!user.accessToken && (
+                ) : (
                     <button
                         onClick={() => navigate('/auth/login')}
                         className="relative px-6 py-1.5 font-semibold border-2 border-indigo-700 overflow-hidden group rounded cursor-pointer">

@@ -7,15 +7,14 @@ import Layout from './components/Layout';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import type { AppDispatch, RootState } from './app/store';
+import { useDispatch } from 'react-redux';
+import type { AppDispatch } from './app/store';
 import Dashboard from './pages/Dashboard';
 import { refreshToken } from './features/auth/authSlice';
+import ProtectedRoute from './routes/Protected.route';
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const user = useSelector((state: RootState) => state.auth);
-  console.log(user)
 
   useEffect(() => {
     const init = async () => {
@@ -28,12 +27,21 @@ export default function App() {
     <>
       <Toaster position='top-right' />
       <Routes>
-        <Route path='/' element={<Layout />} >
+        <Route path='/' element={<Layout />}>
+
           <Route index element={<Home />} />
-          <Route path='/blog/:slug' element={<BlogDetails />} />
-          <Route path='/auth/login' element={<Login />} />
-          <Route path='/auth/register' element={<Register />} />
-          <Route path='/auth/dashboard' element={<Dashboard />} />
+          <Route path='blog/:slug' element={<BlogDetails />} />
+
+          <Route path='auth'>
+            <Route path='login' element={<Login />} />
+            <Route path='register' element={<Register />} />
+
+            {/* Protected routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path='dashboard' element={<Dashboard />} />
+            </Route>
+          </Route>
+
         </Route>
       </Routes>
     </>

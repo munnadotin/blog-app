@@ -1,6 +1,7 @@
 import axios from "axios";
 import { store } from "../app/store";
 import { logOut, refreshToken } from "../features/auth/authSlice";
+import { Navigate } from "react-router-dom";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -17,27 +18,40 @@ api.interceptors.request.use((config) => {
 });
 
 // response interceptor 
-api.interceptors.response.use((response) => response, async (error) => {
-    const originalRequest = error.config;
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
 
-    // token expired
-    if (error.response?.status === 401 && !originalRequest._retry) {
-        originalRequest._retry = true;
-        try {
-            // refresh token
-            const response = await store.dispatch(refreshToken()).unwrap();
-            const { accessToken } = response;
+        const isRefreshCall = originalRequest.url?.includes("/api/auth/refresh-token");
 
-            // attach new token to request
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            return axios(originalRequest);
-        } catch (err) {
-            // redirect to login page
-            store.dispatch(logOut());
-            return Promise.reject(err);
+        // avoid infinite loop
+        if (isRefreshCall) {
+            return Promise.reject(error);
         }
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
+
+            try {
+                const response = await store.dispatch(refreshToken()).unwrap();
+                const { accessToken } = response;
+
+                // update token
+                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+
+                // retry using SAME axios instance
+                return api(originalRequest);
+
+            } catch (err) {
+                store.dispatch(logOut());
+                Navigate({ to: "/auth/login" });
+                return Promise.reject(err);
+            }
+        }
+
+        return Promise.reject(error);
     }
-    return Promise.reject(error);
-}); 
+);
 
 export default api;
