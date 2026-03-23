@@ -11,20 +11,21 @@ import { fetchBlogBySlug } from "../features/blogs/blogSlice";
 function BlogDetails() {
     const { slug } = useParams<{ slug: string }>();
     const { register, handleSubmit, formState: { errors } } = useForm<{ content: string }>();
-    const post = useSelector((state: RootState) => state.blog.blog);
+    const blog = useSelector((state: RootState) => state.blog.blog);
     // const user = useSelector((state: RootState) => state.auth.user);
     const dispatch = useDispatch<AppDispatch>();
     const loading = useSelector((state: RootState) => state.blog.loading);
 
     useEffect(() => {
-        dispatch(fetchBlogBySlug(slug!));
+        if (!blog) {
+            dispatch(fetchBlogBySlug(slug!));
+        }
     }, [slug]);
 
-    console.log(post)
     if (loading) return <Loader />;
 
     async function onSubmit(data: { content: string }) {
-        await commentPost(post?._id!, data.content);
+        await commentPost(blog?._id!, data.content);
     }
 
     return (
@@ -37,8 +38,8 @@ function BlogDetails() {
                         {/* Hero Image */}
                         <div className="relative h-96 rounded-2xl overflow-hidden border border-gray-200">
                             <img
-                                src={post?.ImageCapture}
-                                alt={post?.title}
+                                src={blog?.ImageCapture}
+                                alt={blog?.title}
                                 className="w-full h-full object-cover"
                             />
 
@@ -48,7 +49,7 @@ function BlogDetails() {
 
                         {/* Title (if not on image) */}
                         <h1 className="text-4xl font-bold text-gray-900 leading-tight">
-                            {post?.title}
+                            {blog?.title}
                         </h1>
 
                         {/* Author Info */}
@@ -56,10 +57,10 @@ function BlogDetails() {
                             {/* Author Avatar */}
                             <div className="flex items-center gap-3">
                                 <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white font-semibold">
-                                    {post?.authorId?.name?.charAt(0).toUpperCase()}
+                                    {blog?.authorId?.name?.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <p className="font-medium text-gray-900">{post?.authorId?.name}</p>
+                                    <p className="font-medium text-gray-900">{blog?.authorId?.name}</p>
                                     <p className="text-xs text-gray-500">Author</p>
                                 </div>
                             </div>
@@ -69,7 +70,7 @@ function BlogDetails() {
                                 {/* Date */}
                                 <span className="flex items-center gap-1.5">
                                     <Calendar1 className="h-5 w-5" />
-                                    {new Date(post?.createdAt!).toLocaleDateString('en-US', {
+                                    {new Date(blog?.createdAt!).toLocaleDateString('en-US', {
                                         month: 'short',
                                         day: 'numeric',
                                         year: 'numeric'
@@ -79,7 +80,7 @@ function BlogDetails() {
                                 {/* Reading Time */}
                                 <span className="flex items-center gap-1.5">
                                     <Clock1 className="h-5 w-5" />
-                                    {post?.readingTime} min read
+                                    {blog?.readingTime} min read
                                 </span>
                             </div>
                         </div>
@@ -87,7 +88,7 @@ function BlogDetails() {
                         {/* Tags */}
                         <div className="flex flex-wrap items-center gap-2">
                             <span className="text-sm text-gray-500 mr-2">Topics:</span>
-                            {post?.tags.map((tag) => (
+                            {blog?.tags.map((tag) => (
                                 <span
                                     key={tag}
                                     className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-medium hover:bg-blue-100 transition-colors cursor-pointer"
@@ -99,7 +100,7 @@ function BlogDetails() {
 
                         {/* Blog Content */}
                         <div className="prose prose-lg max-w-none">
-                            {post?.content.split('\n\n').map((paragraph, index) => (
+                            {blog?.content.split('\n\n').map((paragraph, index) => (
                                 <p key={index} className="text-gray-700 leading-relaxed mb-6 text-base">
                                     {paragraph}
                                 </p>
@@ -112,24 +113,24 @@ function BlogDetails() {
                                 {/* Like Button */}
                                 <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors">
                                     <Heart className="h-6 w-6" />
-                                    <span className="font-medium">{post?.likes?.length || 0} likes</span>
+                                    <span className="font-medium">{blog?.likes?.length || 0} likes</span>
                                 </button>
 
                                 {/* Comments Count */}
                                 <button className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition-colors">
                                     <MessageCircle className="h-6 w-6" />
-                                    <span className="font-medium">{post?.comments?.length || 0} comments</span>
+                                    <span className="font-medium">{blog?.comments?.length || 0} comments</span>
                                 </button>
                             </div>
                         </div>
 
                         {/* Comments Section */}
                         <div className="pt-4">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-6">Comments ({post?.comments?.length || 0})</h3>
+                            <h3 className="text-2xl font-bold text-gray-900 mb-6">Comments ({blog?.comments?.length || 0})</h3>
 
                             {/* Comments List */}
                             <div className="space-y-6">
-                                {post?.comments?.map((comment: any) => (
+                                {blog?.comments?.map((comment: any) => (
                                     <div key={comment._id} className="flex gap-4">
                                         <div className="w-10 h-10 rounded-full bg-linear-to-br from-gray-400 to-gray-600 shrink-0"></div>
                                         <div className="flex-1">
@@ -178,10 +179,10 @@ function BlogDetails() {
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">About the Author</h3>
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center text-white text-2xl font-bold">
-                                    {post?.authorId?.name?.charAt(0).toUpperCase()}
+                                    {blog?.authorId?.name?.charAt(0).toUpperCase()}
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-gray-900">{post?.authorId?.name}</h4>
+                                    <h4 className="font-bold text-gray-900">{blog?.authorId?.name}</h4>
                                 </div>
                             </div>
                             <p className="text-gray-600 text-sm mb-4">

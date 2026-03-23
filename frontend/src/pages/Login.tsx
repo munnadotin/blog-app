@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { EyeIcon, EyeOff, Info, Mail, Lock, Loader2 } from 'lucide-react';
 import type { LoginData } from '../types/auth.type';
 import { useNavigate } from 'react-router-dom';
-import { loginUser, setToken, setUser } from '../features/auth/authSlice';
+// import { loginUser, setToken, setUser } from '../features/auth/authSlice';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../app/store';
 
@@ -14,12 +14,12 @@ const Login = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     function onSubmit(data: LoginData) {
-        dispatch(loginUser(data))
-            .then((response) => {
-                const { user, accessToken } = response.payload as any;
-                dispatch(setUser(user));
-                dispatch(setToken(accessToken));
-            });
+        // dispatch(loginUser(data))
+        //     .then((response) => {
+        //         // const { user, accessToken } = response.payload as any;
+        //         // dispatch(setUser(user));
+        //         // dispatch(setToken(accessToken));
+        //     });
     }
     return (
         <div className="min-h-screen flex items-center justify-center p-4">

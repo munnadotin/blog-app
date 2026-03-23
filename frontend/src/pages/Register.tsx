@@ -5,7 +5,7 @@ import type { RegisterData } from '../types/auth.type';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../app/store';
-import { registerUser } from '../features/auth/authSlice';
+// import { registerUser } from '../features/auth/authSlice';
 
 const register = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -14,7 +14,7 @@ const register = () => {
     const dispatch = useDispatch<AppDispatch>();
 
     const onSubmit = (data: RegisterData) => {
-        dispatch(registerUser(data));
+        // dispatch(registerUser(data));
     };
 
     return (
