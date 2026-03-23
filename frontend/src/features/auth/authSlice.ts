@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { LoginData, RegisterData, User } from "../../types/auth.type";
-import { loginApi, refreshTokenApi, registerApi } from "../../api/auth.api";
+import { loginApi, refreshTokenApi, registerApi, logoutApi } from "../../api/auth.api";
 
 interface AuthState {
     user: User | null;
@@ -30,11 +30,29 @@ export const register = createAsyncThunk("auth/register", async (data: RegisterD
     }
 });
 
-export const refreshToken = createAsyncThunk("auth/refresh-token", async (_, { rejectWithValue }) => {
+export const refreshToken = createAsyncThunk<
+    AuthRespnose,
+    void,
+    { rejectValue: string }
+>(
+    "auth/refresh-token",
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await refreshTokenApi();
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(
+                error.response?.data?.message || "Refresh token failed"
+            );
+        }
+    }
+);
+
+export const logOut = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
     try {
-        await refreshTokenApi();
+        await logoutApi();
     } catch (error: any) {
-        return rejectWithValue(error.response.data.message || "Refresh token failed");
+        return rejectWithValue(error.response.data.message || "Logout failed");
     }
 });
 
@@ -64,10 +82,15 @@ const authSlice = createSlice({
                 state.loading = false;
             })
             .addCase(refreshToken.fulfilled, (state, action) => {
-                state.accessToken = action.payload as string;
+                state.user = action.payload.user;
+                state.accessToken = action.payload.accessToken;
             })
 
             .addCase(refreshToken.rejected, (state) => {
+                state.user = null;
+                state.accessToken = null;
+            })
+            .addCase(logOut.fulfilled, (state) => {
                 state.user = null;
                 state.accessToken = null;
             })

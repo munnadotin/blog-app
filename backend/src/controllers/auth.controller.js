@@ -109,7 +109,8 @@ async function refreshToken(req, res) {
 
         res.status(200).json({
             message: "Access token refreshed successfully",
-            accessToken
+            accessToken, 
+            user
         })
     } catch (error) {
         res.status(500).json({

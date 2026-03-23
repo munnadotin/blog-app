@@ -1,10 +1,20 @@
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { RootState } from "../types/api.type";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../app/store";
+import { logOut } from "../features/auth/authSlice";
 
 function Navbar() {
     const user = useSelector((state: RootState) => state.auth);
+    const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+    async function handleLogout() {
+        try {
+            await dispatch(logOut()).unwrap();
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    console.log(user)
 
     return (
         <div className="flex items-center justify-between gap-2 bg-gray-100 py-4 px-8">
@@ -17,11 +27,11 @@ function Navbar() {
             <div className="flex gap-2">
                 {user.accessToken && (
                     <button
-                        onClick={() => navigate('/auth/dashboard')}
+                        onClick={handleLogout}
                         className="relative px-6 py-1.5 font-semibold border-2 border-indigo-700 overflow-hidden group rounded cursor-pointer">
                         <span className="absolute inset-0 bg-blue-700 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
                         <span className="relative z-10 text-blue-700 group-hover:text-white transition-colors duration-300">
-                            Dashboard
+                            Logout
                         </span>
                     </button>
                 )}

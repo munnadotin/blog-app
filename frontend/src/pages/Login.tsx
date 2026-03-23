@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 // import { loginUser, setToken, setUser } from '../features/auth/authSlice';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../app/store';
+import { login } from '../features/auth/authSlice';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -13,7 +14,13 @@ const Login = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
 
-    function onSubmit(data: LoginData) {
+    async function onSubmit(data: LoginData) {
+        try {
+            const res = await dispatch(login(data)).unwrap();
+            console.log(res); 
+        } catch (error) {
+            console.log(error);
+        }
         // dispatch(loginUser(data))
         //     .then((response) => {
         //         // const { user, accessToken } = response.payload as any;
