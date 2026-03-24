@@ -5,7 +5,6 @@ import type { RegisterData } from '../types/auth.type';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../app/store';
-// import { registerUser } from '../features/auth/authSlice';
 
 const register = () => {
     const [showPassword, setShowPassword] = useState(false);

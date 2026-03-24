@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import type { AppDispatch } from '../app/store';
 import { login } from '../features/auth/authSlice';
+import toast from 'react-hot-toast';
 
 const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -15,10 +16,10 @@ const Login = () => {
 
     async function onSubmit(data: LoginData) {
         try {
-            const res = await dispatch(login(data)).unwrap();
-            console.log(res);
-        } catch (error) {
-            console.log(error);
+            const res: unknown = await dispatch(login(data)).unwrap();
+            toast.success((res as { message: string }).message);
+        } catch (error: any) {
+            toast.error(error)
         }
     }
     return (

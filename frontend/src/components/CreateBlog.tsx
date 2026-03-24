@@ -1,0 +1,184 @@
+import { useFieldArray, useForm } from "react-hook-form";
+import { useState } from "react";
+import type { CreatePost } from "../types/post.type";
+import { Plus, Trash } from "lucide-react";
+import toast from "react-hot-toast";
+import { createPost } from "../api/post.api";
+
+function CreateBlog() {
+  const { register, control, handleSubmit, formState: { errors } } = useForm<CreatePost>({
+    defaultValues: {
+      tags: [""]
+    }
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "tags"
+  } as any);
+
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const onSubmit = async (data: CreatePost) => {
+    try {
+      console.log(data)
+      const res = await createPost(data);
+      console.log(res);
+    } catch (error: any) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
+      throw error;
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="w-full max-w-3xl border-2 rounded-lg bg-white border-slate-200 shadow-md p-8">
+
+        {/* Heading */}
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Create New Blog
+        </h2>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
+          {/* Title */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Title
+            </label>
+            <input
+              type="text"
+              placeholder="Enter blog title..."
+              {...register("title", { required: "Title is required" })}
+              className="w-full px-4 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-700 outline-none"
+            />
+            {errors.title && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.title.message}
+              </p>
+            )}
+          </div>
+
+          {/* Content */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Content
+            </label>
+            <textarea
+              rows={5}
+              placeholder="Write your blog content..."
+              {...register("content", { required: "Content is required" })}
+              className="w-full px-4 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-700 outline-none resize-none"
+            />
+            {errors.content && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.content.message}
+              </p>
+            )}
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Tags
+            </label>
+
+            {fields.map((item, index) => (
+              <div key={item.id} className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  {...register(`tags.${index}`)}
+                  placeholder="Enter tag"
+                  className="w-full px-4 py-2 border border-blue-400 rounded-lg"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="px-2 bg-red-500 text-white rounded cursor-pointer"
+                >
+                  <Trash className="h-5 w-5" />
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => append("")}
+              className="mt-2 px-3 py-1 bg-blue-700 text-white rounded flex items-center gap-2 cursor-pointer"
+            >
+              <Plus className="h-5 w-5" /> Add Tag
+            </button>
+          </div>
+
+          {/* Category */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category
+            </label>
+            <select
+              {...register("category", { required: "Category is required" })}
+              className="w-full px-4 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-700 outline-none bg-transparent"
+            >
+              <option value="">Select category</option>
+              <option value="tech">Technology</option>
+              <option value="lifestyle">Career</option>
+              <option value="education">Finance</option>
+              <option value="business">Health</option>
+            </select>
+            {errors.category && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.category.message}
+              </p>
+            )}
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Upload Thumbnail
+            </label>
+
+            <input
+              type="file"
+              accept="image/*"
+              {...register("image")}
+              onChange={handleImageChange}
+              className="w-full text-sm border border-blue-600 rounded-lg p-2 cursor-pointer file:mr-4 file:py-2 file:px-4 file:border-0 file:rounded-md file:bg-blue-500 file:text-white hover:file:bg-blue-700"
+            />
+
+            {/* Preview */}
+            {imagePreview && (
+              <div className="mt-4">
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-56 object-cover rounded-lg border-2 border-slate-200"
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Button */}
+          <button
+            type="submit"
+            className="w-full border border-blue-500 text-blue-500 py-2 rounded-lg font-semibold hover:bg-blue-700 hover:text-white transition duration-200 cursor-pointer"
+          >
+            Publish Blog
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export default CreateBlog;

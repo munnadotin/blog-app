@@ -50,7 +50,8 @@ export const refreshToken = createAsyncThunk<
 
 export const logOut = createAsyncThunk("auth/logout", async (_, { rejectWithValue }) => {
     try {
-        await logoutApi();
+        const response = await logoutApi();
+        return response.data;
     } catch (error: any) {
         return rejectWithValue(error.response.data.message || "Logout failed");
     }

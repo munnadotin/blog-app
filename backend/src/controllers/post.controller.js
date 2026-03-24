@@ -10,6 +10,7 @@ import { generateUniqueSlug } from "../services/slug.service.js";
 async function createPost(req, res) {
     try {
         const { title, content, tags, category } = req.body;
+        console.log(req.file)
 
         if (!title || !content || !tags || !category) {
             return res.status(400).json({

@@ -25,7 +25,7 @@ const postSchema = new mongoose.Schema({
     }],
     ImageCapture: {
         type: String,
-        required: [true, "Cover image is required"],
+        required: [true, "Image is required"],
     },
     slug: {
         type: String,

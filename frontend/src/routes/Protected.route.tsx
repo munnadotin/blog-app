@@ -6,9 +6,8 @@ import Loader from "../components/Loader";
 function ProtectedRoute() {
     const { user, loading } = useSelector((state: RootState) => state.auth);
 
-    console.log({ user, loading })
-
     if (loading) return <Loader />;
+
     return user ? <Outlet /> : <Navigate to="/auth/login" />;
 }
 
