@@ -2,7 +2,7 @@ export interface CreatePost {
     title: string;
     content: string;
     tags: string[];
-    image: File;
+    image: FileList;
     category: string;
 }
 
@@ -19,5 +19,10 @@ export interface Post extends CreatePost {
     createdAt: string;
     readingTime: number;
     updatedAt: string;
+}
+
+export interface CreatePostResponse {
+    message: string;
+    post: Post;
 }
 

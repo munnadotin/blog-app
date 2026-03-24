@@ -8,7 +8,7 @@ export const getAllPosts = () => api.get<{ posts: Post[] }>("/api/post");
 export const getPost = (slug: string) => api.get<{ post: Post }>(`/api/post/${slug}`);
 
 // Create post
-export const createPost = (post: CreatePost) => api.post<{ post: Post }>("/api/post/create", post);
+export const createPost = (post: FormData) => api.post<{ message: string; post: Post }>("/api/post/create", post);
 
 // Update post
 export const updatePost = (id: string, post: CreatePost) => api.put<{ post: Post }>(`/api/post/${id}`, post);

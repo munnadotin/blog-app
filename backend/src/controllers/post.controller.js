@@ -9,17 +9,23 @@ import { generateUniqueSlug } from "../services/slug.service.js";
  */
 async function createPost(req, res) {
     try {
-        const { title, content, tags, category } = req.body;
-        console.log(req.file)
+        const { title, content, category } = req.body;
 
-        if (!title || !content || !tags || !category) {
+        if (!title || !content || !category) {
             return res.status(400).json({
                 message: "All fields are required"
             });
         }
 
-        if (typeof tags === "string") {
-            tags = tags.split(",").map(tag => tag.trim());
+        let tags;
+
+        try {
+            tags =
+                typeof req.body.tags === "string"
+                    ? JSON.parse(req.body.tags)
+                    : req.body.tags;
+        } catch {
+            tags = [];
         }
 
         const image = await uploadToImageKit(req.file);

@@ -21,14 +21,24 @@ function CreateBlog() {
 
   const onSubmit = async (data: CreatePost) => {
     try {
-      console.log(data)
-      const res = await createPost(data);
-      console.log(res);
-    } catch (error: any) {
-      if (error instanceof Error) {
-        toast.error(error.message);
+      const formData = new FormData();
+
+      formData.append("title", data.title);
+      formData.append("content", data.content);
+      formData.append("category", data.category);
+
+      if (data.image && data.image[0]) {
+        formData.append("image", data.image[0]);
       }
-      throw error;
+
+      formData.append("tags", JSON.stringify(data.tags));
+
+      const res: { data: { message: string } } = await createPost(formData);
+      toast.success(res.data.message);
+
+    } catch (error: any) {
+      console.log(error.response?.data);
+      toast.error(error.response?.data?.message || "Error");
     }
   };
 
@@ -130,10 +140,10 @@ function CreateBlog() {
               className="w-full px-4 py-2 border border-blue-400 rounded-lg focus:ring-2 focus:ring-blue-700 outline-none bg-transparent"
             >
               <option value="">Select category</option>
-              <option value="tech">Technology</option>
-              <option value="lifestyle">Career</option>
-              <option value="education">Finance</option>
-              <option value="business">Health</option>
+              <option value="technology">Technology</option>
+              <option value="carrer">Career</option>
+              <option value="finance">Finance</option>
+              <option value="health">Health</option>
             </select>
             {errors.category && (
               <p className="text-red-500 text-sm mt-1">
