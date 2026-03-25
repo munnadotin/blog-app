@@ -12,6 +12,7 @@ export interface Post extends CreatePost {
         name: string;
         email: string;
     };
+    ImageCapture: string;
     category: string;
     slug: string;
     likes: string[];

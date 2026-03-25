@@ -12,6 +12,7 @@ import type { AppDispatch } from './app/store';
 import Dashboard from './pages/Dashboard';
 import { refreshToken } from './features/auth/authSlice';
 import ProtectedRoute from './routes/Protected.route';
+import EditBlog from './components/EditBlog';
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -41,6 +42,7 @@ export default function App() {
               <Route path='dashboard' element={<Dashboard />} />
             </Route>
           </Route>
+          <Route path='/edit/:slug' element={<EditBlog />} />
 
         </Route>
       </Routes>

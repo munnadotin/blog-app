@@ -1,6 +1,7 @@
 import { useState } from "react";
 import CreateBlog from "../components/CreateBlog";
-import DashboardBlogs from "../components/DashboardBlogs";
+import PostBlog from "../components/PostBlog";
+import LikeBlog from "../components/LikeBlog";
 
 function Dashboard() {
   const [activeTab, setActiveTab] = useState("Posts");
@@ -42,8 +43,8 @@ function Dashboard() {
         </div>
 
         {/* CONTENT */}
-        {activeTab === "Posts" && <DashboardBlogs />}
-        {activeTab === "Liked" && <DashboardBlogs />}
+        {activeTab === "Posts" && <PostBlog />}
+        {activeTab === "Liked" && <LikeBlog />}
         {activeTab === "Create Post" && <CreateBlog />}
       </div>
 

@@ -1,5 +1,5 @@
 import api from "./api";
-import type { Post, CreatePost } from "../types/post.type";
+import type { Post } from "../types/post.type";
 
 // Get all posts
 export const getAllPosts = () => api.get<{ posts: Post[] }>("/api/post");
@@ -17,7 +17,7 @@ export const getPost = (slug: string) => api.get<{ post: Post }>(`/api/post/${sl
 export const createPost = (post: FormData) => api.post<{ message: string; post: Post }>("/api/post/create", post);
 
 // Update post
-export const updatePost = (id: string, post: CreatePost) => api.put<{ post: Post }>(`/api/post/${id}`, post);
+export const updatePost = (id: string, post: FormData) => api.put<{ post: Post }>(`/api/post/${id}`, post);
 
 // Delete post
 export const deletePost = (id: string) => api.delete(`/api/post/${id}`);
