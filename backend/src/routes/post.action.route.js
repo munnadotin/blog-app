@@ -5,6 +5,13 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 export const actionRoute = Router();
 
 /**
+ * @route GET /api/post/user/like
+ * @description Get all liked posts by current user
+ * @access Private
+ */
+actionRoute.get("/user/like", authMiddleware, postController.getLikedPosts);
+
+/**
  * @route POST /api/post/:id/like
  * @description Like a post
  * @access Private

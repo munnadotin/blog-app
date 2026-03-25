@@ -194,6 +194,61 @@ async function getAllPosts(req, res) {
 }
 
 /**
+ * @description Get all posts by user
+ * @route GET /api/post/user-posts
+ * @access private
+ */
+async function getPostsByUser(req, res) {
+    try {
+        console.log(req.user.id);
+        const posts = await postModel.find({ authorId: req.user.id }).populate("authorId", "name email");
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({
+                message: "No posts found"
+            });
+        }
+
+        res.status(200).json({
+            message: "Posts fetched successfully",
+            posts
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error",
+            error: error.message
+        })
+    }
+}
+
+/**
+ * @description Get all liked posts by current user
+ * @route GET /api/post/user/like
+ * @access private
+ */
+async function getLikedPosts(req, res) {
+    try {
+        const posts = await postModel.find({ likes: req.user.id }).populate("authorId", "name email");
+
+        if (!posts || posts.length === 0) {
+            return res.status(404).json({
+                message: "No liked posts found"
+            });
+        }
+
+        res.status(200).json({
+            message: "Liked posts fetched successfully",
+            posts
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal server error",
+            error: error.message
+        })
+    }
+}
+
+/**
  * @description Like a post
  * @route POST /api/post/:id/like
  * @access private
@@ -423,7 +478,9 @@ export const postController = {
     updatePost,
     deletePost,
     getPost,
+    getPostsByUser,
     getAllPosts,
+    getLikedPosts,
     likePost,
     unlikePost,
     commentOnPost,

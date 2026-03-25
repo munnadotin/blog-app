@@ -27,6 +27,13 @@ postRoute.put("/:id", upload.single("image"), authMiddleware, postController.upd
 postRoute.delete("/:id", authMiddleware, postController.deletePost);
 
 /**
+ * @route GET /api/post/user-posts
+ * @description Get all posts by user
+ * @access Private
+ */
+postRoute.get("/user-posts", authMiddleware, postController.getPostsByUser);
+
+/**
  * @route GET /api/post/:slug
  * @description Get a post by slug
  * @access Public

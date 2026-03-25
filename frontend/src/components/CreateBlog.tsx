@@ -1,7 +1,7 @@
 import { useFieldArray, useForm } from "react-hook-form";
 import { useState } from "react";
 import type { CreatePost } from "../types/post.type";
-import { Plus, Trash } from "lucide-react";
+import { Loader2, Plus, Trash } from "lucide-react";
 import toast from "react-hot-toast";
 import { createPost } from "../api/post.api";
 
@@ -11,6 +11,7 @@ function CreateBlog() {
       tags: [""]
     }
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -21,6 +22,7 @@ function CreateBlog() {
 
   const onSubmit = async (data: CreatePost) => {
     try {
+      setIsSubmitting(true);
       const formData = new FormData();
 
       formData.append("title", data.title);
@@ -39,6 +41,8 @@ function CreateBlog() {
     } catch (error: any) {
       console.log(error.response?.data);
       toast.error(error.response?.data?.message || "Error");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -124,7 +128,7 @@ function CreateBlog() {
             <button
               type="button"
               onClick={() => append("")}
-              className="mt-2 px-3 py-1 bg-blue-700 text-white rounded flex items-center gap-2 cursor-pointer"
+              className="mt-2 px-2 py-1 bg-blue-500 text-white rounded flex items-center gap-1 cursor-pointer"
             >
               <Plus className="h-5 w-5" /> Add Tag
             </button>
@@ -181,9 +185,14 @@ function CreateBlog() {
           {/* Button */}
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full border border-blue-500 text-blue-500 py-2 rounded-lg font-semibold hover:bg-blue-700 hover:text-white transition duration-200 cursor-pointer"
           >
-            Publish Blog
+            {isSubmitting ? (
+              <Loader2 className="animate-spin h-5 w-5" />
+            ) : (
+              "Publish Blog"
+            )}
           </button>
         </form>
       </div>

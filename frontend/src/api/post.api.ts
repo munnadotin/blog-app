@@ -4,6 +4,12 @@ import type { Post, CreatePost } from "../types/post.type";
 // Get all posts
 export const getAllPosts = () => api.get<{ posts: Post[] }>("/api/post");
 
+//  Get all posts by user
+export const getPostsByUser = () => api.get<{ posts: Post[] }>("/api/post/user-posts");
+
+// Get all liked posts by user
+export const getLikedPosts = () => api.get<{ posts: Post[] }>("/api/post/user/like");
+
 // Get post by slug
 export const getPost = (slug: string) => api.get<{ post: Post }>(`/api/post/${slug}`);
 
