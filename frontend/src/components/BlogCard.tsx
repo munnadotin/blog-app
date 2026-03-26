@@ -5,12 +5,15 @@ import { likePost } from "../api/post.action.api";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { RootState } from "../app/store";
+import { useGetPostsQuery } from "../services/api";
+import type { Post } from "../types/post.type";
 
 function BlogCard() {
-  const blogs = useSelector((state: RootState) => state.blog);
+  const { data, isLoading } = useGetPostsQuery(undefined);
   const userId = useSelector((state: RootState) => state.auth.user?._id);
 
-  if (blogs.loading) return <Loader />;
+  console.log(data)
+  if (isLoading) return <Loader />;
 
   async function handleLike(id: string) {
     try {
@@ -24,7 +27,7 @@ function BlogCard() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 max-w-7xl mx-auto">
-      {blogs.blogs.map((blog) => (
+      {data?.posts.map((blog: Post) => (
         <article
           key={blog._id}
           className="group bg-white rounded-md overflow-hidden border-2 border-slate-200"
