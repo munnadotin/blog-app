@@ -13,17 +13,10 @@ actionRoute.get("/user/like", authMiddleware, postController.getLikedPosts);
 
 /**
  * @route POST /api/post/:id/like
- * @description Like a post
+ * @description Like or dislike a post
  * @access Private
  */
 actionRoute.post("/:id/like", authMiddleware, postController.likePost);
-
-/**
- * @route POST /api/post/:id/unlike
- * @description Unlike a post
- * @access Private
- */
-actionRoute.post("/:id/unlike", authMiddleware, postController.unlikePost);
 
 /**
  * @route POST /api/post/:id/comment

@@ -4,21 +4,22 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "./Loader";
 import { Calendar1, Clock1, Heart, MessageCircle, Reply, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { commentPost } from "../api/post.action.api";
+import { commentPost, likePost } from "../api/post.action.api";
 import type { AppDispatch, RootState } from "../app/store";
 import { fetchBlogBySlug } from "../features/blogs/blogSlice";
+import toast from "react-hot-toast";
 
 function BlogDetails() {
     const { slug } = useParams<{ slug: string }>();
     const { register, handleSubmit, formState: { errors } } = useForm<{ content: string }>();
     const blog = useSelector((state: RootState) => state.blog.blog);
-    // const user = useSelector((state: RootState) => state.auth.user);
+    const userId = useSelector((state: RootState) => state.auth.user?._id);
     const dispatch = useDispatch<AppDispatch>();
     const loading = useSelector((state: RootState) => state.blog.loading);
 
     useEffect(() => {
-        if (!blog) {
-            dispatch(fetchBlogBySlug(slug!));
+        if (!blog && slug) {
+            dispatch(fetchBlogBySlug(slug));
         }
     }, [slug]);
 
@@ -26,6 +27,15 @@ function BlogDetails() {
 
     async function onSubmit(data: { content: string }) {
         await commentPost(blog?._id!, data.content);
+    }
+
+    async function handleLike(postId: string) {
+        try {
+            const res = await likePost(postId);
+            toast.success(res.data.message);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || error.response?.data?.error || error.message);
+        }
     }
 
     return (
@@ -111,8 +121,8 @@ function BlogDetails() {
                         <div className="flex items-center justify-between py-6 border-y border-gray-200">
                             <div className="flex items-center gap-6">
                                 {/* Like Button */}
-                                <button className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors">
-                                    <Heart className="h-6 w-6" />
+                                <button onClick={() => handleLike(blog?._id!)} className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors">
+                                    <Heart className={`w-5 h-5 ${blog?.likes.includes(userId!) ? 'text-red-500 fill-red-500' : ''}`} />
                                     <span className="font-medium">{blog?.likes?.length || 0} likes</span>
                                 </button>
 

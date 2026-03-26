@@ -8,12 +8,18 @@ import type { RootState } from "../app/store";
 
 function BlogCard() {
   const blogs = useSelector((state: RootState) => state.blog);
+  const userId = useSelector((state: RootState) => state.auth.user?._id);
 
   if (blogs.loading) return <Loader />;
 
   async function handleLike(id: string) {
-    await likePost(id);
-    toast.success("Post liked successfully");
+    try {
+      const res = await likePost(id);
+      toast.success(res.data.message);
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || error?.response?.data || error.message;
+      toast.error(msg);
+    }
   }
 
   return (
@@ -93,9 +99,9 @@ function BlogCard() {
             <div className="flex items-center gap-6 text-sm">
               <button
                 onClick={() => handleLike(blog._id)}
-                className="flex items-center gap-1.5 text-gray-600">
+                className="flex items-center gap-1.5 text-gray-600 cursor-pointer">
                 <Heart
-                  className={`w-5 h-5 `}
+                  className={`w-5 h-5 ${blog.likes.includes(userId!) ? 'text-red-500 fill-red-500' : ''}`}
                 />
                 <span className="font-medium">{blog.likes.length}</span>
               </button>

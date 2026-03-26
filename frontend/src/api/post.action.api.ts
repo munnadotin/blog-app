@@ -1,10 +1,7 @@
 import api from "./api";
 
-// Like post
+// Like or dislike post
 export const likePost = (id: string) => (api.post(`/api/post/${id}/like`));
-
-// Unlike post
-export const unlikePost = (id: string) => (api.delete(`/api/post/${id}/like`));
 
 // Comment post
 export const commentPost = (id: string, text: string) => (api.post(`/api/post/${id}/comment`, { text }));

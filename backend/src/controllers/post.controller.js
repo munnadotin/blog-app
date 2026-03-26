@@ -200,7 +200,6 @@ async function getAllPosts(req, res) {
  */
 async function getPostsByUser(req, res) {
     try {
-        console.log(req.user.id);
         const posts = await postModel.find({ authorId: req.user.id }).populate("authorId", "name email");
 
         if (!posts || posts.length === 0) {
@@ -249,7 +248,7 @@ async function getLikedPosts(req, res) {
 }
 
 /**
- * @description Like a post
+ * @description Like or dislike a post
  * @route POST /api/post/:id/like
  * @access private
  */
@@ -267,68 +266,31 @@ async function likePost(req, res) {
             })
         }
 
+        const userId = req.user.id;
+
         // check if user already liked the post
-        const isLiked = post.likes.includes(req.user.id);
+        const isLiked = post.likes.includes(userId);
 
         if (isLiked) {
-            return res.status(400).json({
-                message: "Post already liked"
+            post.likes = post.likes.filter(like => like.toString() !== userId.toString());
+            post.isLiked = false;
+            await post.save();
+
+            return res.status(200).json({
+                message: "Post unliked successfully",
+                post
+            });
+        } else {
+            // add user to likes array
+            post.likes.push(req.user.id);
+            post.isLiked = true;
+            await post.save();
+
+            res.status(200).json({
+                message: "Post liked successfully",
+                post
             });
         }
-
-        // add user to likes array
-        post.likes.push(req.user.id);
-        await post.save();
-
-        res.status(200).json({
-            message: "Post liked successfully",
-            post
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Internal server error",
-            error: error.message
-        })
-    }
-}
-
-/**
- * @description Unlike a post
- * @route POST /api/post/:id/unlike
- * @access private
- */
-
-async function unlikePost(req, res) {
-    try {
-        const { id } = req.params;
-
-        const post = await postModel.findById(id);
-
-        // check post exist
-        if (!post) {
-            return res.status(404).json({
-                message: "Post not found"
-            })
-        }
-
-        // check if user already liked the post
-        const isLiked = post.likes.includes(req.user.id);
-
-        if (!isLiked) {
-            return res.status(400).json({
-                message: "Post not liked"
-            });
-        }
-
-        // remove user from likes array
-        post.likes = post.likes.filter(like => !like.equals(req.user.id));
-        await post.save();
-
-        res.status(200).json({
-            message: "Post unliked successfully",
-            post
-        });
-
     } catch (error) {
         res.status(500).json({
             message: "Internal server error",
@@ -482,7 +444,6 @@ export const postController = {
     getAllPosts,
     getLikedPosts,
     likePost,
-    unlikePost,
     commentOnPost,
     replyToComment,
     deleteComment
