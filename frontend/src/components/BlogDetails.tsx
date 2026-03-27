@@ -3,23 +3,22 @@ import { useSelector } from "react-redux";
 import Loader from "./Loader";
 import { Calendar1, Clock1, Heart, MessageCircle, Reply, Trash2 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import { commentPost, likePost } from "../api/post.action.api";
+import { commentPost } from "../api/post.action.api";
 import type { RootState } from "../app/store";
 import toast from "react-hot-toast";
-import { useGetPostbySlugQuery } from "../services/api";
+import { useAddLikeMutation, useGetPostbySlugQuery } from "../services/api";
 
 function BlogDetails() {
     const { slug } = useParams<{ slug: string }>();
     const { data, isLoading } = useGetPostbySlugQuery(slug, {
         skip: !slug
     });
-
+    const [addLike] = useAddLikeMutation();
     const { register, handleSubmit, formState: { errors } } = useForm<{ content: string }>();
     const userId = useSelector((state: RootState) => state.auth.user?._id);
 
     if (isLoading) return <Loader />;
 
-    console.log(data)
     async function onSubmit(data: { content: string }) {
         try {
             const res = await commentPost(data?.content, data.content);
@@ -31,7 +30,7 @@ function BlogDetails() {
 
     async function handleLike(postId: string) {
         try {
-            const res = await likePost(postId);
+            const res = await addLike(postId);
             toast.success(res.data.message);
         } catch (error: any) {
             toast.error(error.response?.data?.message || error.response?.data?.error || error.message);

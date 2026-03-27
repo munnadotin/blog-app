@@ -1,26 +1,26 @@
 import { Calendar1, ChevronRight, Clock, Heart, MessageCircle } from "lucide-react";
 import Loader from "./Loader";
 import { Link } from "react-router-dom";
-import { likePost } from "../api/post.action.api";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { RootState } from "../app/store";
-import { useGetPostsQuery } from "../services/api";
+import { useGetPostsQuery, useAddLikeMutation } from "../services/api";
 import type { Post } from "../types/post.type";
 
 function BlogCard() {
   const { data, isLoading } = useGetPostsQuery(undefined);
   const userId = useSelector((state: RootState) => state.auth.user?._id);
+  const [addLike] = useAddLikeMutation();
 
-  console.log(data)
   if (isLoading) return <Loader />;
 
   async function handleLike(id: string) {
     try {
-      const res = await likePost(id);
-      toast.success(res.data.message);
+      const res = await addLike(id).unwrap();
+      console.log(res)
+      toast.success(res.message);
     } catch (error: any) {
-      const msg = error?.response?.data?.message || error?.response?.data || error.message;
+      const msg = error?.data?.message || error?.data || error.message;
       toast.error(msg);
     }
   }
