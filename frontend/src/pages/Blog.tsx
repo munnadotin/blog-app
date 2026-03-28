@@ -1,15 +1,28 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import BlogCard from "../components/BlogCard";
+import { useGetPostsQuery } from "../services/api";
+import toast from "react-hot-toast";
+import Loader from "../components/Loader";
 
 const categories = ["All", "Technology", "Career", "Finance", "Health"];
 
 function Blog() {
     const { register, handleSubmit, reset } = useForm();
+    const [searchFilter, setSearchFilter] = useState<string>('');
     const [activeCategory, setActiveCategory] = useState("All");
+    const { data, isLoading, error } = useGetPostsQuery({
+        category: activeCategory === "All" ? undefined : activeCategory.toLowerCase(), search: searchFilter || undefined,
+    }, {
+        skip: !searchFilter && activeCategory === "All" ? false : false,
+    });
+
+    if (error) return toast.error((error as any).data.message);
+    if (isLoading) return <Loader />;
 
     const onSubmit = (data: any) => {
         console.log(data);
+        setSearchFilter(data.search);
         reset();
     };
 
@@ -63,7 +76,7 @@ function Blog() {
                     </div>
                 </div>
             </div>
-            <BlogCard />
+            <BlogCard posts={data?.posts} />
         </>
     )
 }

@@ -1,18 +1,18 @@
-import { Calendar1, ChevronRight, Clock, Heart, MessageCircle } from "lucide-react";
-import Loader from "./Loader";
+import { Calendar1, ChevronRight, Clock, FileX, Heart, MessageCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import type { RootState } from "../app/store";
-import { useGetPostsQuery, useAddLikeMutation } from "../services/api";
+import { useAddLikeMutation } from "../services/api";
 import type { Post } from "../types/post.type";
 
-function BlogCard() {
-  const { data, isLoading } = useGetPostsQuery(undefined);
+type props = {
+  posts: Post[];
+};
+
+function BlogCard({ posts }: props) {
   const userId = useSelector((state: RootState) => state.auth.user?._id);
   const [addLike] = useAddLikeMutation();
-
-  if (isLoading) return <Loader />;
 
   async function handleLike(id: string) {
     try {
@@ -24,9 +24,30 @@ function BlogCard() {
     }
   }
 
+  if (!posts || posts.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+
+        {/* Icon */}
+        <div className="bg-gray-100 p-6 rounded-full mb-4">
+          <FileX className="w-12 h-12 text-gray-500" />
+        </div>
+
+        {/* Title */}
+        <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+          No Posts Found
+        </h2>
+
+        {/* Description */}
+        <p className="text-gray-500 max-w-md mb-6">
+          Looks like there are no posts available right now. Try refreshing or check back later.
+        </p>
+      </div>);
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-8 max-w-7xl mx-auto">
-      {data?.posts.map((blog: Post) => (
+      {posts.map((blog: Post) => (
         <article
           key={blog._id}
           className="group bg-white rounded-md overflow-hidden border-2 border-slate-200"
@@ -90,7 +111,7 @@ function BlogCard() {
               {blog.tags.map((tag, index) => (
                 <span
                   key={index}
-                  className="text-xs px-3 py-1.5 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors duration-300 cursor-default font-medium"
+                  className="text-xs px-3 py-1.5 rounded-full bg-blue-100 text-gray-700 hover:bg-blue-200 transition-colors duration-300 cursor-default font-medium"
                 >
                   #{tag}
                 </span>

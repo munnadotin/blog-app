@@ -20,8 +20,16 @@ export const api = createApi({
     endpoints: (builder) => ({
         // Get all posts
         getPosts: builder.query({
-            query: () => `/api/post`,
-            providesTags: ["Posts"],
+            query: ({ category, search, page = 1 }) => {
+                const params = new URLSearchParams();
+                if (category) params.append('category', category);
+                if (search) params.append('search', search);
+                params.append('page', page.toString());
+
+                const queryString = params.toString();
+                return `/api/post${queryString ? `?${queryString}` : ''}`;
+            },
+            providesTags: ["Posts"]
         }),
 
         // Get post by slug
