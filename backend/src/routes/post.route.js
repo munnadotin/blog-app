@@ -8,41 +8,41 @@ export const postRoute = Router();
 /**
  * @route POST /api/post/create
  * @description Create a new post
- * @access Private
+ * @access private
  */
 postRoute.post("/create", upload.single("image"), authMiddleware, postController.createPost);
 
 /**
  * @route PUT /api/post/:id
  * @description Update a post
- * @access Private
+ * @access private
  */
 postRoute.put("/:id", upload.single("image"), authMiddleware, postController.updatePost);
 
 /**
  * @route DELETE /api/post/:id
  * @description Delete a post
- * @access Private
+ * @access private
  */
 postRoute.delete("/:id", authMiddleware, postController.deletePost);
 
 /**
  * @route GET /api/post/user-posts
  * @description Get all posts by user
- * @access Private
+ * @access private
  */
 postRoute.get("/user-posts", authMiddleware, postController.getPostsByUser);
 
 /**
  * @route GET /api/post/:slug
  * @description Get a post by slug
- * @access Public
+ * @access public
  */
 postRoute.get("/:slug", postController.getPost);
 
 /**
  * @route GET /api/post
  * @description Get all posts
- * @access Public
+ * @access public
  */
 postRoute.get("/", postController.getAllPosts);

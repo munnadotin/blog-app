@@ -1,30 +1,18 @@
-import { useEffect, useState } from 'react'
-import type { Post } from '../types/post.type';
-import { getPostsByUser } from '../api/post.api';
-import toast from 'react-hot-toast';
 import Card from './Card';
 import { useNavigate } from 'react-router-dom';
+import { useGetPostsByUserQuery } from '../services/api';
+import Loader from './Loader';
+import toast from 'react-hot-toast';
 
 function PostBlog() {
-    const [posts, setPosts] = useState<Post[]>([]);
+    const { data, isLoading, error } = useGetPostsByUserQuery(undefined);
     const navigate = useNavigate();
+    
+    if (isLoading) return <Loader />;
+    if (error) return toast.error((error as any).data?.message || "Failed to load posts");
 
-    useEffect(() => {
-        if (posts.length > 0) return;
-
-        const fetchPosts = async () => {
-            try {
-                const res = await getPostsByUser();
-                setPosts(res.data.posts);
-            } catch (err: any) {
-                toast.error(err.message);
-            }
-        };
-
-        fetchPosts();
-    }, [])
     return (
-        <Card Posts={posts} onRead={(p) => navigate(`/blog/${p.slug}`)} onEdit={(p) => navigate(`/edit/${p.slug}`)} />
+        <Card Posts={data?.posts || []} onRead={(p) => navigate(`/blog/${p.slug}`)} onEdit={(p) => navigate(`/edit/${p.slug}`)} />
     )
 }
 

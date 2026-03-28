@@ -17,7 +17,6 @@ function BlogCard() {
   async function handleLike(id: string) {
     try {
       const res = await addLike(id).unwrap();
-      console.log(res)
       toast.success(res.message);
     } catch (error: any) {
       const msg = error?.data?.message || error?.data || error.message;

@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { commentPost } from "../api/post.action.api";
 import type { RootState } from "../app/store";
 import toast from "react-hot-toast";
-import { useAddLikeMutation, useGetPostbySlugQuery } from "../services/api";
+import { useAddCommentMutation, useAddLikeMutation, useGetPostbySlugQuery, useDeleteCommentMutation } from "../services/api";
 
 function BlogDetails() {
     const { slug } = useParams<{ slug: string }>();
@@ -14,15 +14,18 @@ function BlogDetails() {
         skip: !slug
     });
     const [addLike] = useAddLikeMutation();
-    const { register, handleSubmit, formState: { errors } } = useForm<{ content: string }>();
+    const [addComment] = useAddCommentMutation();
+    const [deleteComment] = useDeleteCommentMutation();
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<{ content: string }>();
     const userId = useSelector((state: RootState) => state.auth.user?._id);
 
     if (isLoading) return <Loader />;
 
-    async function onSubmit(data: { content: string }) {
+    async function onSubmit(formData: { content: string }) {
         try {
-            const res = await commentPost(data?.content, data.content);
+            const res = await addComment({ postId: data.post._id, text: formData.content });
             toast.success(res.data.message)
+            reset();
         } catch (error: any) {
             toast.error(error.response?.data?.message || error.message);
         }
@@ -37,6 +40,15 @@ function BlogDetails() {
         }
     }
 
+    async function handleDeleteCMT(commentId: string) {
+        try {
+            const res = await deleteComment({ postId: data.post._id, commentId });
+            toast.success(res.data.message);
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || error.response?.data?.error || error.message);
+        }
+    }
+    
     return (
         <div className="min-h-screen py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -120,7 +132,7 @@ function BlogDetails() {
                         <div className="flex items-center justify-between py-6 border-y border-gray-200">
                             <div className="flex items-center gap-6">
                                 {/* Like Button */}
-                                <button onClick={() => handleLike(data.post?._id!)} className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors">
+                                <button onClick={() => handleLike(data.post?._id!)} className="flex items-center gap-2 text-gray-700 hover:text-red-600 transition-colors cursor-pointer">
                                     <Heart className={`w-5 h-5 ${data.post?.likes.includes(userId!) ? 'text-red-500 fill-red-500' : ''}`} />
                                     <span className="font-medium">{data.post?.likes?.length || 0} likes</span>
                                 </button>
@@ -152,8 +164,8 @@ function BlogDetails() {
                                                     {new Date(comment.createdAt).toLocaleDateString()}
                                                     <div className="flex items-center gap-3">
                                                         {/* reply and delete */}
-                                                        <Reply className="h-5 w-6" />
-                                                        <Trash2 className="h-4 w-5" />
+                                                        <Reply className="h-5 w-6 cursor-pointer" />
+                                                        <Trash2 onClick={() => handleDeleteCMT(comment._id)} className="h-4 w-5 cursor-pointer" />
                                                     </div>
                                                 </span>
                                             </div>

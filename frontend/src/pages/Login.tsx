@@ -18,6 +18,7 @@ const Login = () => {
         try {
             const res: unknown = await dispatch(login(data)).unwrap();
             toast.success((res as { message: string }).message);
+            navigate('/auth/dashboard'); 
         } catch (error: any) {
             toast.error(error)
         }

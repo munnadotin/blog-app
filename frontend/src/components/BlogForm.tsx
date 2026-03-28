@@ -10,13 +10,7 @@ type BlogFormProps = {
 };
 
 function BlogForm({ defaultValues, onSubmit, isEdit }: BlogFormProps) {
-  const {
-    register,
-    control,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm({
+  const { register, control, handleSubmit, formState: { errors }, reset } = useForm({
     defaultValues: {
       tags: [""],
       ...defaultValues,
@@ -47,7 +41,6 @@ function BlogForm({ defaultValues, onSubmit, isEdit }: BlogFormProps) {
       await onSubmit(data);
     } catch (error: any) {
       console.error("Form submission error:", error);
-      // Error is handled in the parent component (CreateBlog)
       throw error;
     } finally {
       setIsSubmitting(false);

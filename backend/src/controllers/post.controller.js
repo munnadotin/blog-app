@@ -173,7 +173,33 @@ async function getPost(req, res) {
  */
 async function getAllPosts(req, res) {
     try {
-        const posts = await postModel.find().populate("authorId", "name email");
+        const { category, search, page = 1, limit = 10 } = req.query;
+        let query = {};
+
+        // filter posts by category
+        if (category) {
+            query.category = category;
+        }
+
+        // search posts by title or content
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: "i" } },
+                { content: { $regex: search, $options: "i" } }
+            ]
+        }
+
+        // fetch posts with pagination and sorting
+        const posts = await postModel.find(query).populate("authorId", "name email")
+            .skip((page - 1) * limit)
+            .limit(Number(limit))
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            message: "Posts fetched successfully",
+            posts
+        });
+
 
         if (!posts || posts.length === 0) {
             return res.status(404).json({
@@ -181,10 +207,6 @@ async function getAllPosts(req, res) {
             });
         }
 
-        res.status(200).json({
-            message: "Posts fetched successfully",
-            posts
-        });
     } catch (error) {
         res.status(500).json({
             message: "Internal server error",
@@ -202,21 +224,16 @@ async function getPostsByUser(req, res) {
     try {
         const posts = await postModel.find({ authorId: req.user.id }).populate("authorId", "name email");
 
-        if (!posts || posts.length === 0) {
-            return res.status(404).json({
-                message: "No posts found"
-            });
-        }
-
         res.status(200).json({
-            message: "Posts fetched successfully",
+            message: posts.length ? "Posts fetched successfully" : "No posts found",
             posts
         });
+
     } catch (error) {
         res.status(500).json({
             message: "Internal server error",
             error: error.message
-        })
+        });
     }
 }
 
@@ -228,17 +245,12 @@ async function getPostsByUser(req, res) {
 async function getLikedPosts(req, res) {
     try {
         const posts = await postModel.find({ likes: req.user.id }).populate("authorId", "name email");
-
-        if (!posts || posts.length === 0) {
-            return res.status(404).json({
-                message: "No liked posts found"
-            });
-        }
-
+        
         res.status(200).json({
-            message: "Liked posts fetched successfully",
+            message: posts.length ? "Posts fetched successfully" : "No posts found",
             posts
         });
+
     } catch (error) {
         res.status(500).json({
             message: "Internal server error",

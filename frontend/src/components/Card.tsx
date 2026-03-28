@@ -7,6 +7,9 @@ type BlogCardProps = {
 }
 
 function Card({ Posts, onRead, onEdit }: BlogCardProps) {
+    if(!Posts || Posts.length === 0){
+        return <div className="text-center text-slate-500 py-8">No posts found</div>
+    }
 
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
