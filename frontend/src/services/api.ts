@@ -20,11 +20,12 @@ export const api = createApi({
     endpoints: (builder) => ({
         // Get all posts
         getPosts: builder.query({
-            query: ({ category, search, page = 1 }) => {
+            query: ({ category, search, page = 1, limit = 9 }) => {
                 const params = new URLSearchParams();
                 if (category) params.append('category', category);
                 if (search) params.append('search', search);
                 params.append('page', page.toString());
+                params.append('limit', limit.toString());
 
                 const queryString = params.toString();
                 return `/api/post${queryString ? `?${queryString}` : ''}`;

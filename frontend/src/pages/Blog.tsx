@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import BlogCard from "../components/BlogCard";
 import { useGetPostsQuery } from "../services/api";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
+import Pagination from "../components/pagination";
 
 const categories = ["All", "Technology", "Career", "Finance", "Health"];
 
@@ -11,17 +12,30 @@ function Blog() {
     const { register, handleSubmit, reset } = useForm();
     const [searchFilter, setSearchFilter] = useState<string>('');
     const [activeCategory, setActiveCategory] = useState("All");
+    const [page, setPage] = useState<number>(1);
+    const limit = 9;
+    const [totalPosts, setTotalPosts] = useState<number>(1);
     const { data, isLoading, error } = useGetPostsQuery({
-        category: activeCategory === "All" ? undefined : activeCategory.toLowerCase(), search: searchFilter || undefined,
+        category: activeCategory === "All" ? undefined : activeCategory.toLowerCase(), search: searchFilter || undefined, page, limit
     }, {
         skip: !searchFilter && activeCategory === "All" ? false : false,
     });
+
+    useEffect(() => {
+        console.log(data)
+        if (data) {
+            setTotalPosts(data?.totalPosts);
+        }
+    }, [data]);
+
+    useEffect(() => {
+        setPage(1);
+    }, [searchFilter, activeCategory])
 
     if (error) return toast.error((error as any).data.message);
     if (isLoading) return <Loader />;
 
     const onSubmit = (data: any) => {
-        console.log(data);
         setSearchFilter(data.search);
         reset();
     };
@@ -77,6 +91,9 @@ function Blog() {
                 </div>
             </div>
             <BlogCard posts={data?.posts} />
+            <div className="flex items-center justify-center py-3 mb-4">
+                <Pagination page={page} setPage={setPage} totalPosts={totalPosts} limit={limit} />
+            </div>
         </>
     )
 }

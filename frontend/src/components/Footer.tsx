@@ -30,7 +30,6 @@ function Footer() {
           <div className="md:col-span-3">
             <h3 className="text-lg font-semibold mb-4 relative inline-block">
               Quick Links
-              <span className="absolute bottom-0 left-0 w-12 h-0.5 bg-yellow-300 rounded-full"></span>
             </h3>
             <ul className="space-y-3">
               {['Overview', 'Features', 'Pricing', 'Contact'].map((item) => (
@@ -50,7 +49,6 @@ function Footer() {
           <div className="md:col-span-4">
             <h3 className="text-lg font-semibold mb-4 relative inline-block">
               Connect With Us
-              <span className="absolute bottom-0 left-0 w-12 h-0.5 bg-yellow-300 rounded-full"></span>
             </h3>
 
             {/* Social Links with Icons */}

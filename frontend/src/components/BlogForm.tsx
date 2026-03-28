@@ -37,10 +37,8 @@ function BlogForm({ defaultValues, onSubmit, isEdit }: BlogFormProps) {
   const handleFormSubmit = async (data: any) => {
     try {
       setIsSubmitting(true);
-      console.log("Form data being submitted:", data);
       await onSubmit(data);
     } catch (error: any) {
-      console.error("Form submission error:", error);
       throw error;
     } finally {
       setIsSubmitting(false);

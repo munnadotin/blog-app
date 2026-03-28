@@ -173,7 +173,7 @@ async function getPost(req, res) {
  */
 async function getAllPosts(req, res) {
     try {
-        const { category, search, page = 1, limit = 10 } = req.query;
+        const { category, search, page = 1, limit = 9 } = req.query;
         let query = {};
 
         // filter posts by category
@@ -190,13 +190,19 @@ async function getAllPosts(req, res) {
         }
 
         // fetch posts with pagination and sorting
-        const posts = await postModel.find(query).populate("authorId", "name email")
-            .skip((page - 1) * limit)
-            .limit(Number(limit))
-            .sort({ createdAt: -1 });
+        const [TotalPosts, posts] = [
+            await postModel.countDocuments(query),
+            await postModel.find(query).populate("authorId", "name email")
+                .skip((page - 1) * limit)
+                .limit(Number(limit))
+                .sort({ createdAt: -1 })
+        ];
 
         res.status(200).json({
             message: "Posts fetched successfully",
+            totalPosts: TotalPosts,
+            page: Number(page),
+            limit: Number(limit),
             posts
         });
 
@@ -245,7 +251,7 @@ async function getPostsByUser(req, res) {
 async function getLikedPosts(req, res) {
     try {
         const posts = await postModel.find({ likes: req.user.id }).populate("authorId", "name email");
-        
+
         res.status(200).json({
             message: posts.length ? "Posts fetched successfully" : "No posts found",
             posts

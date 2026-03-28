@@ -40,7 +40,7 @@ function BlogCard({ posts }: props) {
 
         {/* Description */}
         <p className="text-gray-500 max-w-md mb-6">
-          Looks like there are no posts available right now. Try refreshing or check back later.
+          Looks like there are no posts available right now.
         </p>
       </div>);
   }
