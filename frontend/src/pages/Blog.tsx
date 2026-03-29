@@ -4,7 +4,7 @@ import BlogCard from "../components/BlogCard";
 import { useGetPostsQuery } from "../services/api";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
-import Pagination from "../components/pagination";
+import Pagination from "../components/Pagination";
 
 const categories = ["All", "Technology", "Career", "Finance", "Health"];
 
@@ -22,7 +22,6 @@ function Blog() {
     });
 
     useEffect(() => {
-        console.log(data)
         if (data) {
             setTotalPosts(data?.totalPosts);
         }

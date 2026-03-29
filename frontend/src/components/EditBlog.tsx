@@ -1,53 +1,60 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import BlogForm from "./BlogForm";
-import { getPost, updatePost } from "../api/post.api";
 import toast from "react-hot-toast";
+import Loader from "./Loader";
+import { useGetPostbySlugQuery, useUpdatePostMutation } from "../services/api";
 
 function EditBlog() {
     const { slug } = useParams();
-    const [post, setPost] = useState<any>(null);
+    const { data: postData, isLoading, error } = useGetPostbySlugQuery(slug);
+    const [updatePost, { isLoading: isUpdating }] = useUpdatePostMutation();
+    const naviate = useNavigate();
 
-    useEffect(() => {
-        const fetchPost = async () => {
-            const res = await getPost(slug!);
-            setPost(res.data.post);
-        };
-
-        fetchPost();
-    }, [slug]);
-
-    if (!post) return <p>Loading...</p>;
+    if (isLoading) return <Loader />;
+    if (isUpdating) return <Loader />;
+    if (error) return toast.error((error as any).message);
 
     return (
-        <BlogForm
-            defaultValues={post}
-            isEdit
-            onSubmit={async (data) => {
-                try {
-                    const formData = new FormData();
+        <div className="py-8">
+            <BlogForm
+                defaultValues={{
+                    ...postData?.post,
+                    tags:
+                        typeof postData?.post?.tags === "string"
+                            ? JSON.parse(postData.post.tags)
+                            : postData?.post?.tags,
+                }} isEdit
+                onSubmit={async (formDataValues) => {
+                    try {
+                        const formData = new FormData();
 
-                    formData.append("title", data.title);
-                    formData.append("content", data.content);
-                    formData.append("category", data.category);
+                        formData.append("title", formDataValues.title);
+                        formData.append("content", formDataValues.content);
+                        formData.append("category", formDataValues.category);
 
-                    if (data.image?.[0]) {
-                        formData.append("image", data.image[0]);
+                        if (formDataValues.image?.[0]) {
+                            formData.append("image", formDataValues.image[0]);
+                        }
+
+                        formData.append("tags", JSON.stringify(formDataValues.tags));
+
+                        const response: any = await updatePost({
+                            id: postData?.post._id,
+                            data: formData
+                        }).unwrap();
+
+                        toast.success(response.message);
+                        naviate("/");
+                    } catch (error: any) {
+                        console.error("Update error:", error);
+                        const errorMessage =
+                            error.data?.message || error.message || "Failed to update blog post";
+                        toast.error(errorMessage);
+                        throw error;
                     }
-
-                    formData.append("tags", JSON.stringify(data.tags));
-
-                    console.log("Updating post with ID:", post._id);
-                    const response: any = await updatePost(post._id, formData);
-                    toast.success(response.data.message);
-                } catch (error: any) {
-                    console.error("Update error:", error);
-                    const errorMessage = error.response?.data?.message || error.message || "Failed to update blog post";
-                    toast.error(errorMessage);
-                    throw error;
-                }
-            }}
-        />
+                }}
+            />
+        </div>
     );
 }
 

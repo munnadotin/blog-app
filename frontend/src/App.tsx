@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import { refreshToken } from './features/auth/authSlice';
 import ProtectedRoute from './routes/Protected.route';
 import EditBlog from './components/EditBlog';
+import Error from './pages/Error';
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
@@ -29,6 +30,7 @@ export default function App() {
       <Toaster position='top-right' />
       <Routes>
         <Route path='/' element={<Layout />}>
+          <Route path='*' element={<Error />} />
 
           <Route index element={<Home />} />
           <Route path='blog/:slug' element={<BlogDetails />} />

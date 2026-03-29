@@ -2,11 +2,12 @@ import type { Post } from '../types/post.type'
 
 type BlogCardProps = {
     Posts: Post[];
-    onRead: (post: Post) => void;
+    onRead?: (post: Post) => void;
+    onDelete?: (post: Post) => void; 
     onEdit?: (post: Post) => void;
 }
 
-function Card({ Posts, onRead, onEdit }: BlogCardProps) {
+function Card({ Posts, onDelete, onEdit }: BlogCardProps) {
     if(!Posts || Posts.length === 0){
         return <div className="text-center text-slate-500 py-8">No posts found</div>
     }
@@ -67,8 +68,8 @@ function Card({ Posts, onRead, onEdit }: BlogCardProps) {
 
                         {/* Spacer */}
                         <div className="mt-auto flex gap-2 pt-3">
-                            {<button onClick={() => onRead(post)} className="flex-1 text-sm bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700 transition cursor-pointer">
-                                Read More
+                            {onDelete && <button onClick={() => onDelete(post)} className="flex-1 text-sm bg-blue-600 text-white py-1.5 rounded hover:bg-blue-700 transition cursor-pointer">
+                                Delete
                             </button>}
                             {onEdit && <button onClick={() => onEdit(post)} className="flex-1 text-sm bg-white-600 border-2 py-1.5 rounded border-slate-300 transition cursor-pointer">
                                 Edit

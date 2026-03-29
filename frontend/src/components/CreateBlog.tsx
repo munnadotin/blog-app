@@ -1,8 +1,12 @@
 import BlogForm from "./BlogForm";
-import { createPost } from "../api/post.api";
 import toast from "react-hot-toast";
+import { useCreatePostMutation } from "../services/api";
+import { useNavigate } from "react-router-dom";
 
 function CreateBlog() {
+  const [createPostMutation] = useCreatePostMutation();
+  const navigate = useNavigate();
+
   return (
     <BlogForm
       onSubmit={async (data) => {
@@ -18,8 +22,9 @@ function CreateBlog() {
 
         formData.append("tags", JSON.stringify(data.tags));
 
-        await createPost(formData);
+        await createPostMutation(formData);
         toast.success("Blog Created");
+        navigate("/");
       }}
     />
   );

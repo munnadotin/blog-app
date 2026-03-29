@@ -67,35 +67,46 @@ async function updatePost(req, res) {
         const image = req.file;
         const { id } = req.params;
 
-        // find the post by id
         const post = await postModel.findById(id);
 
-        // check if post exists
         if (!post) {
             return res.status(404).json({
                 message: "Post not found"
             });
         }
 
-        // only update if the field is provided
         if (title) post.title = title;
         if (content) post.content = content;
-        if (tags) post.tags = tags;
-        if (category) post.category = category;
-        if (image) post.ImageCapture = await uploadToImageKit(image);
 
-        // save the updated post
+        if (tags) {
+            try {
+                post.tags =
+                    typeof tags === "string"
+                        ? JSON.parse(tags)
+                        : tags;
+            } catch {
+                post.tags = [];
+            }
+        }
+
+        if (category) post.category = category;
+
+        if (image) {
+            post.ImageCapture = await uploadToImageKit(image);
+        }
+
         await post.save();
 
         res.status(200).json({
             message: "Post updated successfully",
             post
         });
+
     } catch (error) {
         res.status(500).json({
             message: "Internal server error",
             error: error.message
-        })
+        });
     }
 }
 

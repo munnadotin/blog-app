@@ -39,6 +39,28 @@ export const api = createApi({
             providesTags: ["Posts"],
         }),
 
+        // create post
+        createPost: builder.mutation({
+            query: (data) => ({
+                url: `/api/post/create`,
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ["Posts"],
+        }),
+
+        // update post
+        updatePost: builder.mutation({
+            query: ({ id, data }) => {
+                return {
+                    url: `/api/post/${id}`,
+                    method: "PUT",
+                    body: data,
+                };
+            },
+            invalidatesTags: ["Posts"],
+        }),
+
         // Add like to post
         addLike: builder.mutation({
             query: (postId) => ({
@@ -77,8 +99,17 @@ export const api = createApi({
         getLikedPosts: builder.query({
             query: () => `/api/post/user/like`,
             providesTags: ["Posts"],
-        })
+        }),
+
+        // Delete post
+        deletePost: builder.mutation({
+            query: (postId) => ({
+                url: `/api/post/${postId}`,
+                method: "DELETE",
+            }),
+            invalidatesTags: ["Posts"],
+        }),
     }),
 });
 
-export const { useGetPostsQuery, useGetPostbySlugQuery, useAddLikeMutation, useAddCommentMutation, useDeleteCommentMutation, useGetPostsByUserQuery, useGetLikedPostsQuery } = api; 
+export const { useGetPostsQuery, useGetPostbySlugQuery, useCreatePostMutation, useAddLikeMutation, useAddCommentMutation, useDeleteCommentMutation, useGetPostsByUserQuery, useGetLikedPostsQuery, useDeletePostMutation, useUpdatePostMutation } = api; 
