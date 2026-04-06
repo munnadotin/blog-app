@@ -25,6 +25,10 @@ A full-featured blog application built using the MERN stack with modern best pra
 * Efficient state management using Redux Toolkit
 * Real-world feature implementation
 
+## Demo video
+https://github.com/user-attachments/assets/f8573156-c9b9-4604-ba5c-2d687900aeb9
+
+
 ## Installation
 
 ### 1. Clone the repository
